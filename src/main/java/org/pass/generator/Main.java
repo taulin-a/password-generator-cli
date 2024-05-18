@@ -5,9 +5,11 @@ import com.beust.jcommander.ParameterException;
 import org.pass.generator.exception.InvalidStrategyException;
 import org.pass.generator.gen.strategy.PassGenStrategyFactory;
 import org.pass.generator.model.PasswordGenInputDTO;
+import org.pass.generator.ui.UIComponentProvider;
 
 public class Main {
     public static void main(String[] args) {
+        var uiComponent = UIComponentProvider.getInstance().provide();
         try {
             var passGenInput = new PasswordGenInputDTO();
 
@@ -17,12 +19,11 @@ public class Main {
                     .parse(args);
 
             var strategy = PassGenStrategyFactory.getInstance().getStrategy(passGenInput.getStrategy());
-
-            System.out.printf("Password generated: %s%n", strategy.generate(passGenInput.getLength()));
+            uiComponent.displayMessage("Password generated: %s", strategy.generate(passGenInput.getLength()));
         } catch (ParameterException e) {
-            System.out.printf("Invalid parameter: %s%n", e.getMessage());
+            uiComponent.displayErrorMessage("Invalid parameter: %s", e.getMessage());
         } catch (InvalidStrategyException e) {
-            System.out.println(e.getMessage());
+            uiComponent.displayErrorMessage(e.getMessage());
         }
     }
 }
